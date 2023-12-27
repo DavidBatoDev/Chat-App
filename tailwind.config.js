@@ -37,6 +37,9 @@ export default {
       borderColor: {
         input: '#a7bcff',
       },
+      maxWidth: {
+        AT: '80%'
+      }
     },
   },
   plugins: [],

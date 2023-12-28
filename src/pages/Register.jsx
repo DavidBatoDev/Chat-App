@@ -22,7 +22,13 @@ const Register = () => {
             
             const storageRef = ref(storage, displayName);
             const uploadTask = uploadBytesResumable(storageRef, file);
-            uploadTask.on(
+            uploadTask.on('state_changed', 
+            (snapshot) => {
+                console.log('img, uploaded')
+            }, 
+            (error) => {
+                console.log(error.message)
+            }, 
             () => {
                 getDownloadURL(uploadTask.snapshot.ref).then(async (downloadURL) => {
                     await updateProfile(res.user, {
@@ -42,6 +48,7 @@ const Register = () => {
         navigate('/')
         } catch (error) {
             setError(true)
+            alert(error.message)
         }
     }
 

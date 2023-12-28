@@ -1,5 +1,4 @@
 import React, { useState, useEffect } from 'react'
-import UserImg from '/lexi.jpg'
 import {auth} from '../Firebase'
 import { signOut } from 'firebase/auth';
 import { useNavigate } from 'react-router-dom';

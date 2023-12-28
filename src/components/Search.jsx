@@ -3,6 +3,7 @@ import { useAuthContext } from '../context/AuthProvider';
 import { db } from '../Firebase';
 import {collection, setDoc, getDocs, getDoc, updateDoc, doc, query, where, serverTimestamp } from 'firebase/firestore'
 import handleKey from '../utils/handleKey';
+import SearchIcon from '@mui/icons-material/Search';
 
 const Search = () => {
     const {currentUser} = useAuthContext()
@@ -95,12 +96,15 @@ const Search = () => {
 
   return (
     <div className=' flex flex-col w-full h-max bg-slate-700 pt-2'>
-        <input 
-            onKeyDown={e => handleKey(e, searchUser)}
-            value={username}
-            onChange={e => setUserName(e.target.value)}
-            className='w-full h-10 text-sm p-2 outline-none text-white placeholder:text-white bg-transparent' type="text" placeholder='Search User' 
-        />
+        <div className='flex items-center'>
+            <input 
+                onKeyDown={e => handleKey(e, searchUser)}
+                value={username}
+                onChange={e => setUserName(e.target.value)}
+                className='w-full h-10 text-sm p-2 outline-none text-white placeholder:text-white bg-transparent' type="text" placeholder='Search User' 
+            />
+            <SearchIcon className='cursor-pointer text-slate-300' onClick={searchUser}/>
+        </div>
         <p className='text-xs flex text-slate-300 justify-center w-full'>{error ? errorMessage : ""}</p>
         {users ?
             <div className='border-b-2 w-full border-slate-600'>

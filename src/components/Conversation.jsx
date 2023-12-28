@@ -8,12 +8,12 @@ import Message from './Message';
 import { nanoid } from 'nanoid';
 import { useAuthContext } from '../context/AuthProvider';
 import { uploadBytesResumable, ref, getDownloadURL } from 'firebase/storage';
+import CollectionsIcon from '@mui/icons-material/Collections';
 
 const Conversation = () => {
     const {currentUser} = useAuthContext()
     const {data} = useChatContext()
 
-    // Messages functionality
     const [messages, setMessages] = useState([])
 
 
@@ -32,8 +32,6 @@ const Conversation = () => {
     const [text, setText] = useState('')
     const [img, setImg] = useState(null)
 
-    console.log(img)
-
     const handleSend = async() => {
         if (img) {
             const storageRef = ref(storage, nanoid())
@@ -43,7 +41,7 @@ const Conversation = () => {
                     console.log('img, uploaded')
                 }, 
                 (error) => {
-                    
+                    console.log(error.message)
                 }, 
                 () => {
                     getDownloadURL(uploadTask.snapshot.ref).then(async (downloadURL) => {
@@ -104,10 +102,15 @@ const Conversation = () => {
             {/* Messages */}
             <div style={{height: 'calc(100% - 128px)'}} 
                 className='flex flex-col gap-3 bg-slate-400 p-3 overflow-y-scroll'>
-                {/* Message */}
-                {messages.map(message => (
+                {messages ?
+                messages.map(message => (
                     <Message key={message.id} message={message}/>
-                ))}
+                ))
+                : 
+                <div className='flex text-3xl font-bold'>
+                    Getting lonely right here... Send a chat!
+                </div>
+                }
             </div>
 
             {/* Input */}
@@ -116,7 +119,9 @@ const Conversation = () => {
                     <textarea value={text} onChange={e => setText(e.target.value)} className='outline-none flex items-center h-full w-full resize-none' placeholder='Type Message'></textarea>
                 </div>
                 <div className='flex gap-3'>
-                    <label className='cursor-pointer' htmlFor="img">IMG</label>
+                    <label className='cursor-pointer' htmlFor="img">
+                        <CollectionsIcon className='text-slate-800' />
+                    </label>
                     <input style={{display: 'none'}} onChange={e => setImg(e.target.files[0])} type="file" name='img' id='img' />
                     <SendIcon onClick={handleSend} className='text-slate-800 cursor-pointer'/>
                 </div>

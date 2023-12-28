@@ -1,4 +1,4 @@
-import React, {createContext, useContext, useReducer} from 'react'
+import React, {createContext, useEffect, useContext, useReducer} from 'react'
 import { useAuthContext } from './AuthProvider'
 
 const ChatContext = createContext()
@@ -7,11 +7,10 @@ export const useChatContext = () =>  useContext(ChatContext)
 
 const initialState = {
     user: {},
-    chatId: 'qxdYUpGn6DNwJNUHpCeOh83FgA92U5DM4mw3U8SQfFJOklyo1G8HIPk1'
+    chatId: null
 }
 
 export function ChatProvider({children}) {
-
     const {currentUser} = useAuthContext()
     
     const chatReducer = (state, action) => {
@@ -30,6 +29,15 @@ export function ChatProvider({children}) {
     }
 
     const [state, dispatch] = useReducer(chatReducer, initialState)
+
+    useEffect(() => {
+        if (currentUser) {
+            dispatch({
+                type: 'CHANGE_USER',
+                payload: currentUser
+            });
+        }
+    }, [currentUser]);
 
 
     return (

@@ -124,7 +124,8 @@ const Conversation = () => {
                             <CollectionsIcon className='text-slate-800' />
                             :
                             <img src={URL.createObjectURL(img)} alt='img' 
-                                className='h-7 w-10 rounded-full object-cover border-slate-600 border'
+                                className='h-7
+                                 w-10 rounded-full object-cover border-slate-600 border'
                             />
                         }
                     </label>

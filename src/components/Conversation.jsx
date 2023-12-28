@@ -18,14 +18,16 @@ const Conversation = () => {
 
 
     useEffect(() => {
-        const unsub = onSnapshot(doc(db, 'chats', data.chatId), (doc) => {
-            doc.exists() && setMessages(doc.data().messages)
-        })
-
-        return () => {
-            unsub()
+        if (data.chatId) {
+            const unsub = onSnapshot(doc(db, 'chats', data.chatId), (doc) => {
+                doc.exists() && setMessages(doc.data().messages);
+            });
+    
+            return () => {
+                unsub();
+            };
         }
-    }, [data.chatId])
+    }, [data.chatId]);
 
 
     // Input functionality

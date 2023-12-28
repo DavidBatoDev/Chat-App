@@ -21,17 +21,19 @@ const Sidebar = () => {
 
     useEffect(() => {
         const getChats = () => {
-            const unsub = onSnapshot(doc(db, 'usersChats', currentUser.uid), (doc) => {
-                setChats(doc.data())
-            });
-
-            return () => {
-                unsub()
+            if (currentUser && currentUser.uid) {
+                const unsub = onSnapshot(doc(db, 'usersChats', currentUser.uid), (doc) => {
+                    setChats(doc.data());
+                });
+    
+                return () => {
+                    unsub();
+                };
             }
-        }
-
-        currentUser.uid && getChats()
-    }, [currentUser.uid])
+        };
+    
+        getChats();
+    }, [currentUser]);
 
     const handleSelect = (user) => {
         dispatch({

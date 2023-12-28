@@ -97,7 +97,11 @@ const Conversation = () => {
         <div style={{flex: '2'}} 
             className='bg-slate-300 flex flex-col w-full'>
             <div className='flex justify-between items-center h-20 text-white bg-slate-800 p-2'>
-                <div>{data.user?.displayName}</div>
+                <div className='pl-3 flex gap-4'>
+                    <img className='h-12 w-12 object-cover rounded-full' 
+                        src={data.user?.photoURL} />
+                    <div>{data.user?.displayName}</div>
+                </div>
                 <MoreHorizIcon />
             </div>
 

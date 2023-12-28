@@ -46,6 +46,7 @@ const Message = ({message}) => {
         return formattedTime;
       }
       
+      console.log(message)
       
     return (
         <div ref={ref} className={`flex gap-5 ${fromMe() && 'flex-row-reverse'}`}>
@@ -59,7 +60,7 @@ const Message = ({message}) => {
                 <p 
                 className={`bg-white text-black pt-2 pb-2 pl-3 pr-3
                 rounded-tr-lg rounded-bl-lg rounded-br-lg w-max
-                ${fromMe() && ' bg-gray-800 text-white rounded-tr-none rounded-tl-lg rounded-bl-lg rounded-br-lg'}
+                ${fromMe() && ' bg-zinc-900 text-white rounded-tr-none rounded-tl-lg rounded-bl-lg rounded-br-lg'}
                 `}>
                     {message.text}
                 </p>

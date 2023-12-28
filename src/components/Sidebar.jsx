@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useState, useEffect } from 'react'
 import UserImg from '/lexi.jpg'
 import {auth} from '../Firebase'
 import { signOut } from 'firebase/auth';
@@ -6,14 +6,31 @@ import { useNavigate } from 'react-router-dom';
 import LogoutIcon from '@mui/icons-material/Logout';
 import { useAuthContext } from '../context/AuthProvider';
 import AccountCircleIcon from '@mui/icons-material/AccountCircle';
+import { onSnapshot, doc } from 'firebase/firestore';
+import { db } from '../Firebase';
+import Search from './Search';
 
 const Sidebar = () => {
     const {currentUser} = useAuthContext()
-    console.log(currentUser)
     const navigate = useNavigate()
 
-    // For the search functionality
+    const [chats, setChats] = useState([])
 
+    useEffect(() => {
+        const getChats = () => {
+            const unsub = onSnapshot(doc(db, 'usersChats', currentUser.uid), (doc) => {
+                setChats(doc.data())
+            });
+
+            return () => {
+                unsub()
+            }
+        }
+
+        currentUser.uid && getChats()
+    }, [currentUser.uid])
+
+    // Navigation functionality
     const handleSignOut = () => {
         signOut(auth).then(() => {
             navigate('login')
@@ -21,6 +38,7 @@ const Sidebar = () => {
             alert(error.message)
           });
     }
+
   return (
     <div className='relative flex-1 flex flex-col'>
         {/* Nav */}
@@ -36,23 +54,21 @@ const Sidebar = () => {
         </div>
 
         {/* Search */}
-        <div className=' flex w-full h-14 p-2 bg-slate-700'>
-            <input 
-                className='border-b-2 border-slate-800 w-full h-10 text-sm p-2 outline-none text-white placeholder:text-white bg-transparent' type="text" placeholder='Search User' 
-            />
-        </div>
+        <Search />
 
         {/* Chats */}
-        <div className='flex flex-col h-full w-full bg-slate-700'>
 
-            <div className='p-2 flex w-full justify-between text-white'>
-                <img className='h-10 w-10 object-cover rounded-full' src={UserImg} alt="" />
+        <div className='flex flex-col h-full w-full bg-slate-700'>
+            {chats && Object.entries(chats)?.map(chat => (
+            <div key={chat[0]} className='p-2 flex w-full justify-between text-white cursor-pointer hover:bg-slate-800'>
+                <img src={chat[1].userInfo.photoURL} className='h-10 w-10 object-cover rounded-full' alt="" />
                 <div className='w-full flex flex-col ml-2'>
-                    <div className='font-bold'>Lexi</div>
-                    <span className='text-xs'>Hello Babe!</span>
+                    <div className='font-bold'>{chat[1].userInfo.displayName}</div>
+                    <span className='text-xs'>Hello!</span>
                 </div>
             </div>
-    
+            ))
+            }
         </div>
     </div>
   )

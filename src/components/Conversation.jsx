@@ -27,9 +27,9 @@ const Conversation = () => {
                     rounded-tr-lg rounded-bl-lg rounded-br-lg w-max
                     ${isMe && 'bg-slate-700 text-white rounded-tr-none rounded-tl-lg rounded-bl-lg rounded-br-lg'}
                     `}>
-                        Hello Babe!
+                        Hello!
                     </p>
-                    <img className='w-1/2 object-cover' src={UserImg} /> 
+                    <img className='w-1/2 object-cover' src='hello' alt='image' /> 
                 </div>
             </div>
         </div>

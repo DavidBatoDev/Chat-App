@@ -22,8 +22,6 @@ const Register = () => {
             
             const storageRef = ref(storage, displayName);
             const uploadTask = uploadBytesResumable(storageRef, file);
-            
-
             uploadTask.on(
             console.log('is working'),
             () => {
@@ -38,7 +36,7 @@ const Register = () => {
                         email: email,
                         photoURL: downloadURL
                     })
-                    await setDoc(db, userChats, res.user.uid), {}
+                    await setDoc(doc(db, 'usersChats', res.user.uid), {})
                 });
                 console.log(res.user)
             }

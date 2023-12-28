@@ -120,7 +120,13 @@ const Conversation = () => {
                 </div>
                 <div className='flex gap-3'>
                     <label className='cursor-pointer' htmlFor="img">
-                        <CollectionsIcon className='text-slate-800' />
+                        {!img ?
+                            <CollectionsIcon className='text-slate-800' />
+                            :
+                            <img src={URL.createObjectURL(img)} alt='img' 
+                                className='h-7 w-10 rounded-full object-cover border-slate-600 border'
+                            />
+                        }
                     </label>
                     <input style={{display: 'none'}} onChange={e => setImg(e.target.files[0])} type="file" name='img' id='img' />
                     <SendIcon onClick={handleSend} className='text-slate-800 cursor-pointer'/>

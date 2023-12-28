@@ -107,16 +107,18 @@ const Conversation = () => {
 
             {/* Messages */}
             <div style={{height: 'calc(100% - 128px)'}} 
-                className='flex flex-col gap-3 bg-slate-400 p-3 overflow-y-scroll'>
-                {messages ?
-                messages.map(message => (
-                    <Message key={message.id} message={message}/>
-                ))
-                : 
-                <div className='flex text-3xl font-bold'>
-                    Getting lonely right here... Send a chat!
+                className='flex flex-col-reverse gap-3 bg-slate-400 p-3 overflow-y-scroll'>
+                <div className='flex flex-col'>
+                    {messages ?
+                    messages.map(message => (
+                        <Message key={message.id} message={message}/>
+                    ))
+                    : 
+                    <div className='flex text-3xl font-bold'>
+                        Getting lonely right here... Send a chat!
+                    </div>
+                    }
                 </div>
-                }
             </div>
 
             {/* Input */}

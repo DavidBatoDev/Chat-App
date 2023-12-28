@@ -1,50 +1,129 @@
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import MoreHorizIcon from '@mui/icons-material/MoreHoriz';
 import SendIcon from '@mui/icons-material/Send';
-import UserImg from '/lexi.jpg'
+import { useChatContext } from '../context/ChatProvider';
+import {Timestamp, arrayUnion, doc, onSnapshot, serverTimestamp, updateDoc} from 'firebase/firestore'
+import {db, storage} from '../Firebase'
+import Message from './Message';
+import { nanoid } from 'nanoid';
+import { useAuthContext } from '../context/AuthProvider';
+import { uploadBytesResumable, ref, getDownloadURL } from 'firebase/storage';
 
 const Conversation = () => {
-    const [isMe, setFalse] = useState(false)
-  return (
-    <div style={{flex: '2'}} 
-        className='bg-slate-300 flex flex-col w-full'>
-        <div className='flex justify-between items-center h-20 text-white bg-slate-800 p-2'>
-            <div>Lexi</div>
-            <MoreHorizIcon />
-        </div>
+    const {currentUser} = useAuthContext()
+    const {data} = useChatContext()
 
-        {/* Chat */}
-        <div style={{height: 'calc(100% - 128px)'}} 
-            className='flex flex-col-reverse gap-3 bg-slate-400 p-3 overflow-y-scroll'>
-            <div className={`flex gap-5 ${isMe && 'flex-row-reverse'}`}>
-                <div className='flex flex-col items-center'>
-                    <img className='w-10 h-10 rounded-full object-cover' src={UserImg} alt="" />
-                    <span className='text-xs text-slate-600'>Now!</span>
+    // Messages functionality
+    const [messages, setMessages] = useState([])
+
+
+    useEffect(() => {
+        const unsub = onSnapshot(doc(db, 'chats', data.chatId), (doc) => {
+            doc.exists() && setMessages(doc.data().messages)
+        })
+
+        return () => {
+            unsub()
+        }
+    }, [data.chatId])
+
+
+    // Input functionality
+    const [text, setText] = useState('')
+    const [img, setImg] = useState(null)
+
+    console.log(img)
+
+    const handleSend = async() => {
+        if (img) {
+            const storageRef = ref(storage, nanoid())
+            const uploadTask = uploadBytesResumable(storageRef, img)
+            uploadTask.on('state_changed', 
+                (snapshot) => {
+                    console.log('img, uploaded')
+                }, 
+                (error) => {
+                    
+                }, 
+                () => {
+                    getDownloadURL(uploadTask.snapshot.ref).then(async (downloadURL) => {
+                         await updateDoc(doc(db, 'chats', data.chatId), {
+                             messages: arrayUnion({
+                                 id: nanoid(),
+                                 text,
+                                 senderId: currentUser.uid,
+                                 data: Timestamp.now(),
+                                 img: downloadURL
+                             })
+                         })
+                    });
+                }
+            )
+            setText('')
+            setImg('')
+        } else {
+            await updateDoc(doc(db, 'chats', data.chatId), {
+                messages: arrayUnion({
+                    id: nanoid(),
+                    text,
+                    senderId: currentUser.uid,
+                    data: Timestamp.now()
+                })
+            })
+            setText('')
+            setImg('')
+        }
+
+        await updateDoc(doc(db, 'usersChats', currentUser.uid), {
+            [data.chatId + '.lastMessage']: {
+                text,
+            },
+            [data.chatId + '.date']: serverTimestamp()
+        })
+
+        await updateDoc(doc(db, 'usersChats', data.user.uid), {
+            [data.chatId + '.lastMessage']: {
+                text,
+            },
+            [data.chatId + '.date']: serverTimestamp()
+        })
+
+        setText('')
+        setImg(null)
+    }
+
+    return (
+        // UserInfo
+        <div style={{flex: '2'}} 
+            className='bg-slate-300 flex flex-col w-full'>
+            <div className='flex justify-between items-center h-20 text-white bg-slate-800 p-2'>
+                <div>{data.user?.displayName}</div>
+                <MoreHorizIcon />
+            </div>
+
+            {/* Messages */}
+            <div style={{height: 'calc(100% - 128px)'}} 
+                className='flex flex-col gap-3 bg-slate-400 p-3 overflow-y-scroll'>
+                {/* Message */}
+                {messages.map(message => (
+                    <Message key={message.id} message={message}/>
+                ))}
+            </div>
+
+            {/* Input */}
+            <div className='flex items-center h-16 w-full bg-white p-2'>
+                <div className='h-full w-full p-2'>
+                    <textarea value={text} onChange={e => setText(e.target.value)} className='outline-none flex items-center h-full w-full resize-none' placeholder='Type Message'></textarea>
                 </div>
-                <div className={`flex flex-col text-white max-w-AT gap-3 ${isMe && 'items-end'}`}>
-                    <p 
-                    className={`bg-white text-black pt-2 pb-2 pl-3 pr-3
-                    rounded-tr-lg rounded-bl-lg rounded-br-lg w-max
-                    ${isMe && 'bg-slate-700 text-white rounded-tr-none rounded-tl-lg rounded-bl-lg rounded-br-lg'}
-                    `}>
-                        Hello!
-                    </p>
-                    <img className='w-1/2 object-cover' src='hello' alt='image' /> 
+                <div className='flex gap-3'>
+                    <label className='cursor-pointer' htmlFor="img">IMG</label>
+                    <input style={{display: 'none'}} onChange={e => setImg(e.target.files[0])} type="file" name='img' id='img' />
+                    <SendIcon onClick={handleSend} className='text-slate-800 cursor-pointer'/>
                 </div>
             </div>
         </div>
 
-        <div className='flex items-center h-16 w-full bg-white p-2'>
-            <div className='h-full w-full p-2'>
-            <textarea className='outline-none flex items-center h-full w-full resize-none' placeholder='Search Idol'></textarea>
-            </div>
-            <div>
-                <SendIcon className='text-slate-800 cursor-pointer'/>
-            </div>
-        </div>
-    </div>
-
-  )
+    )
 }
 
 export default Conversation

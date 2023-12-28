@@ -23,7 +23,6 @@ const Register = () => {
             const storageRef = ref(storage, displayName);
             const uploadTask = uploadBytesResumable(storageRef, file);
             uploadTask.on(
-            console.log('is working'),
             () => {
                 getDownloadURL(uploadTask.snapshot.ref).then(async (downloadURL) => {
                     await updateProfile(res.user, {
@@ -38,7 +37,6 @@ const Register = () => {
                     })
                     await setDoc(doc(db, 'usersChats', res.user.uid), {})
                 });
-                console.log(res.user)
             }
         );
         navigate('/')

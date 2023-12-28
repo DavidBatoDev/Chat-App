@@ -9,12 +9,16 @@ import AccountCircleIcon from '@mui/icons-material/AccountCircle';
 import { onSnapshot, doc } from 'firebase/firestore';
 import { db } from '../Firebase';
 import Search from './Search';
+import { useChatContext } from '../context/ChatProvider';
 
 const Sidebar = () => {
     const {currentUser} = useAuthContext()
     const navigate = useNavigate()
 
+
+    // Chats functionality
     const [chats, setChats] = useState([])
+    const {dispatch} = useChatContext()
 
     useEffect(() => {
         const getChats = () => {
@@ -29,6 +33,13 @@ const Sidebar = () => {
 
         currentUser.uid && getChats()
     }, [currentUser.uid])
+
+    const handleSelect = (user) => {
+        dispatch({
+            type: 'CHANGE_USER',
+            payload: user
+        })
+    }
 
     // Navigation functionality
     const handleSignOut = () => {
@@ -59,12 +70,12 @@ const Sidebar = () => {
         {/* Chats */}
 
         <div className='flex flex-col h-full w-full bg-slate-700'>
-            {chats && Object.entries(chats)?.map(chat => (
-            <div key={chat[0]} className='p-2 flex w-full justify-between text-white cursor-pointer hover:bg-slate-800'>
+            {chats && Object.entries(chats)?.sort((a,b) => b[1].date - a[1].date).map(chat => (
+            <div onClick={() => handleSelect(chat[1].userInfo)} key={chat[0]} className='p-2 flex w-full justify-between text-white cursor-pointer hover:bg-slate-800'>
                 <img src={chat[1].userInfo.photoURL} className='h-10 w-10 object-cover rounded-full' alt="" />
                 <div className='w-full flex flex-col ml-2'>
                     <div className='font-bold'>{chat[1].userInfo.displayName}</div>
-                    <span className='text-xs'>Hello!</span>
+                    <span className='text-xs'>{chat[1].lastMessage?.text}</span>
                 </div>
             </div>
             ))

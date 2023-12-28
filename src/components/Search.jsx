@@ -73,6 +73,7 @@ const Search = () => {
                         photoURL: user.photoURL
                     },
                     [mergedIds+'.date']: serverTimestamp(),
+                    [mergedIds+'.lastMessage']: '',
                 })
 
                 await updateDoc(doc(db, 'usersChats', user.uid), {
@@ -82,6 +83,7 @@ const Search = () => {
                         photoURL: currentUser.photoURL
                     },
                     [mergedIds+'.date']: serverTimestamp(),
+                    [mergedIds+'.lastMessage']: '',
                 })
                 setUsers([])
                 setUserName('')

@@ -1,3 +1,1 @@
-*Unfinish App
-
-This app is a chat app that leverage the real-time database of Firebase to send messages
+Built with React and Firebase, this real-time messaging platform utilizes Firebase's backend to enable instant communication with a live chat feature. Users can log in, exchange text messages, and share images seamlessly for a dynamic chatting experience.
